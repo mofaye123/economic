@@ -634,7 +634,7 @@ if API_KEY:
                     ),
                     showlegend=True,
                     height=500,
-                    title="经济状态雷达 (0=历史最冷, 100=历史最热)"
+                    title=" (0=历史最冷, 100=历史最热)"
                 )
                 
                 st.plotly_chart(fig_radar, use_container_width=True)
