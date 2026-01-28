@@ -34,7 +34,7 @@ with st.sidebar:
     """)
 
 # ==========================================
-# 2. 核心指标定义 & 深度解读文案 (全面升级)
+# 2. 核心指标定义
 # ==========================================
 INDICATORS = {
     "就业 (Employment)": {
@@ -144,7 +144,7 @@ INDICATOR_EXPLANATIONS = {
     """
 }
 # ==========================================
-# 3. 核心功能：数据获取与处理
+# 3. 数据获取与处理
 # ==========================================
 @st.cache_data(ttl=3600)
 def fetch_and_process_data(api_key, indicators, years):
@@ -210,12 +210,9 @@ def calculate_quant_metrics(df, z_window):
     return metrics_df
 
 # ==========================================
-# 4. 新增功能：智能研报生成器 (专业增强版)
+# 4. 智能研报生成
 # ==========================================
 def generate_smart_report(category, df):
-    """
-    根据最新数据生成专业级宏观研报
-    """
     report_text = f"### 📝 {category} · 总结\n\n"
     
     # 获取该板块下指标的最新有效值
@@ -408,7 +405,7 @@ if API_KEY:
         tab1, tab2, tab3, tab4 = st.tabs([" 趋势分析 & 研报", " 宏观周期定位", " 动态 Z-Score 热力图", "经济状态雷达"])
 
         
-        # Tab 1: 趋势分析 & 智能研报 (全面升级)
+        # Tab 1: 趋势分析 & 智能研报
         with tab1:
             col_left, col_right = st.columns([2, 1])
             
@@ -563,7 +560,7 @@ if API_KEY:
             st.markdown("##### 经济状态雷达：当前 vs 1年前 (基于历史百分位)")
             
             # 1. 准备雷达图数据
-            # 我们选取每个板块的一个代表性指标
+            # 选取每个板块的一个代表性指标
             radar_indicators = {
                 "就业 (非农)": "非农就业人数 (Non-Farm Payrolls)",
                 "消费 (零售)": "零售销售 (Retail Sales)",
@@ -573,8 +570,7 @@ if API_KEY:
             }
             
             radar_data = {}
-            # 计算历史分位数 (Percentile Rank)
-            # 0 = 历史最低，100 = 历史最高
+            # 计算历史分位数 
             for label, col_name in radar_indicators.items():
                 if f"{col_name}_Raw" in quant_df.columns:
                     series = quant_df[f"{col_name}_Raw"].dropna()
@@ -609,7 +605,6 @@ if API_KEY:
                 fig_radar = go.Figure()
                 
                 # 绘制当前状态 (红色)
-                # 使用 customdata 传入对比数据(last_year_vals)，并在 hovertemplate 中显示
                 fig_radar.add_trace(go.Scatterpolar(
                     r=current_vals, theta=categories,
                     fill='toself', name='当前 (Current)',
@@ -619,7 +614,6 @@ if API_KEY:
                 ))
                 
                 # 绘制1年前状态 (灰色)
-                # 同样传入当前数据作为对比，确保悬停在哪层都能看到两个数
                 fig_radar.add_trace(go.Scatterpolar(
                     r=last_year_vals, theta=categories,
                     fill='toself', name='1年前 (1 Year Ago)',
@@ -655,11 +649,9 @@ if API_KEY:
         with st.expander("点击展开/收起 完整数据表格", expanded=False):
             st.caption("以下表格展示了所有指标的原始数值（未经处理）。数据已按日期降序排列。**注意：GDP 等季度指标在非发布月份显示为空 (`-`) 是正常的，请参考季度发布月份 (1/4/7/10月)。**")
             
-            # 将索引格式化为字符串以便展示
             display_df = raw_df.sort_index(ascending=False).copy()
             display_df.index = display_df.index.strftime('%Y-%m-%d')
             
-            # 优化展示：将 NaN 替换为更友好的 "-"
             st.dataframe(
                 display_df.fillna("-"),
                 use_container_width=True,
